@@ -7,6 +7,7 @@ import com.ccreanga.cache.CacheWriteException;
 import com.ccreanga.cache.CachedItem;
 import com.ccreanga.cache.serializers.JDKSerializer;
 import com.ccreanga.cache.serializers.ObjectSerializer;
+import com.google.common.base.Preconditions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,13 +20,14 @@ public class DiskStore<K, V> implements Store<K, V> {
     private File keysFolder;
     private File valuesFolder;
     private ObjectSerializer serializer;
-    private static final int MAX_CAPACITY = 1000000001;
+    private static final int CAPACITY = 1000000001;
     private int currentItems = 0;
     private int maxItems;
 
 
     public DiskStore(File root, int maxItems) {
-        this.root = root;
+        this.root = Preconditions.checkNotNull(root);
+        Preconditions.checkArgument((maxItems<=CAPACITY) && (maxItems>0));
         this.maxItems = maxItems;
         this.serializer = new JDKSerializer();
 
@@ -167,7 +169,7 @@ public class DiskStore<K, V> implements Store<K, V> {
     }
 
     protected String obtainFileName(K key) {
-        String fileName = StringUtils.leftPad("" + (key.hashCode() & 0x7FFFFFFF) % MAX_CAPACITY, 9, '0');
+        String fileName = StringUtils.leftPad("" + (key.hashCode() & 0x7FFFFFFF) % CAPACITY, 9, '0');
         return fileName.substring(7) + File.separator +
                 fileName.substring(5, 7) + File.separator +
                 fileName.substring(3, 5) + File.separator +

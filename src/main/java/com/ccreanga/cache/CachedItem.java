@@ -57,10 +57,6 @@ public class CachedItem<K, V> implements Serializable {
     public void increaseHitCount() {
         hitCount++;
     }
-
-    public void setHitCount(long hitCount) {
-        this.hitCount = hitCount;
-    }
 }
 
 

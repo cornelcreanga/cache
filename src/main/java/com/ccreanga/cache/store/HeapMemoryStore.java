@@ -1,6 +1,7 @@
 package com.ccreanga.cache.store;
 
 import com.ccreanga.cache.CachedItem;
+import com.google.common.base.Preconditions;
 
 import java.util.HashMap;
 
@@ -8,11 +9,13 @@ public class HeapMemoryStore<K, V> implements Store<K, V> {
 
     private int maxItems;
     private int currentItems = 0;
+    private static final int CAPACITY = 1000000001;
     public HashMap<K, CachedItem<K, V>> hashMap;
 
 
     public HeapMemoryStore(int maxItems) {
         hashMap = new HashMap<>();
+        Preconditions.checkArgument((maxItems<=CAPACITY) && (maxItems>0));
         this.maxItems = maxItems;
     }
 

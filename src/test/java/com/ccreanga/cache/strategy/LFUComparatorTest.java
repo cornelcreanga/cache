@@ -11,9 +11,9 @@ public class LFUComparatorTest {
     public void testCompareEquals() throws Exception {
         LFUComparator lfuComparator = new LFUComparator();
         CachedItem<String, String> first = new CachedItem<>("key","value");
-        first.setHitCount(1);
+        first.increaseHitCount();
         CachedItem<String, String> second = new CachedItem<>("key","value");
-        second.setHitCount(1);
+        second.increaseHitCount();
         assertTrue(lfuComparator.compare(first,second)==0);
     }
 
@@ -21,9 +21,9 @@ public class LFUComparatorTest {
     public void testCompareGreater() throws Exception {
         LFUComparator lfuComparator = new LFUComparator();
         CachedItem<String, String> first = new CachedItem<>("key","value");
-        first.setHitCount(2);
+        first.increaseHitCount();first.increaseHitCount();
         CachedItem<String, String> second = new CachedItem<>("key","value");
-        second.setHitCount(1);
+        second.increaseHitCount();
         assertTrue(lfuComparator.compare(first,second)==1);
     }
 
@@ -31,9 +31,9 @@ public class LFUComparatorTest {
     public void testCompareLower() throws Exception {
         LFUComparator lfuComparator = new LFUComparator();
         CachedItem<String, String> first = new CachedItem<>("key","value");
-        first.setHitCount(1);
+        first.increaseHitCount();
         CachedItem<String, String> second = new CachedItem<>("key","value");
-        second.setHitCount(2);
+        second.increaseHitCount();second.increaseHitCount();
         assertTrue(lfuComparator.compare(first,second)==-1);
     }
 }
