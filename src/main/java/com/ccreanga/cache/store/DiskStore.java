@@ -105,20 +105,27 @@ public class DiskStore<K, V> implements Store<K, V> {
             CachedItem<K, V> oldValue = readValueObject(valueFile);
             delete(keyFile);
             delete(valueFile);
-            while (!keyFile.getParentFile().equals(keysFolder)
-                    && keyFile.getParentFile().listFiles().length == 0) {
-                delete(keyFile.getParentFile());
-                keyFile = keyFile.getParentFile();
-            }
-            while (!valueFile.getParentFile().equals(valuesFolder)
-                    && valueFile.getParentFile().listFiles().length == 0) {
-                delete(valueFile.getParentFile());
-                valueFile = valueFile.getParentFile();
-            }
+
+            deleteEmptyFolders(keysFolder,keyFile);
+            deleteEmptyFolders(valuesFolder,valueFile);
+
             currentItems--;
             return oldValue;
         } catch (IOException ioe) {
             return null;
+        }
+    }
+
+
+    private void deleteEmptyFolders(File root, File child){
+        while(true){
+            File parent = child.getParentFile();
+            if (parent.equals(root))
+                break;
+            File[] listFiles=parent.listFiles();
+            if (((listFiles!=null)) && (listFiles.length==0))
+                delete(parent);
+            child = parent;
         }
     }
 
