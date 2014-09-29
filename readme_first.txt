@@ -4,3 +4,7 @@ the implementation was developed in a short amount of time. a lot of things can 
 -better testing
 -better error handling, especially for the storage part
 -add logging
+-compute statistics
+-improve disk access performance using a better structure
+-use non heap cache
+-add some comments
