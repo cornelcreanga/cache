@@ -1,8 +1,6 @@
 package com.ccreanga.cache.store;
 
 import com.ccreanga.cache.CachedItem;
-import com.ccreanga.cache.store.DiskStore;
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,106 +15,105 @@ public class DiskStoreTest {
 
     public static final int MAX_ITEMS = 10;
     private File root;
-    private DiskStore<String,Date> map;
+    private DiskStore<String,Date> store;
 
     public DiskStoreTest() {
-        root = new File("/tmp/persistent_test");
+        root = new File("/tmp");
     }
 
     @Before
     public void setUp() throws IOException {
-        FileUtils.deleteDirectory(root);
-        map = new DiskStore<>(root, MAX_ITEMS);
+        store = new DiskStore<>(root, MAX_ITEMS);
     }
 
     @After
     public void tearDown() throws IOException {
-        FileUtils.deleteDirectory(root);
+        store.clear();
     }
 
     @Test
     public void testContainsKey() {
-        assertFalse(map.containsKey("key"));
-        map.put(new CachedItem<>("key", new Date()));
-        assertTrue(map.containsKey("key"));
-        assertFalse(map.containsKey("fail"));
+        assertFalse(store.containsKey("key"));
+        store.put(new CachedItem<>("key", new Date()));
+        assertTrue(store.containsKey("key"));
+        assertFalse(store.containsKey("fail"));
     }
 
 
     @Test
     public void testGet() {
         Date value = new Date();
-        map.put(new CachedItem<>("key", value));
-        assertEquals(value, map.get("key").getValue());
+        store.put(new CachedItem<>("key", value));
+        assertEquals(value, store.get("key").getValue());
     }
 
     @Test
     public void testPut() {
         Date value = new Date();
-        assertFalse(map.containsKey("key"));
-        map.put(new CachedItem<>("key", value));
-        assertTrue(map.containsKey("key"));
+        assertFalse(store.containsKey("key"));
+        store.put(new CachedItem<>("key", value));
+        assertTrue(store.containsKey("key"));
     }
 
     @Test
     public void testExistingPut() {
         Date value = new Date();
-        assertFalse(map.containsKey("key"));
-        map.put(new CachedItem<>("key", value));
-        assertTrue(map.containsKey("key"));
-        map.put(new CachedItem<>("key", value));
-        assertTrue(map.containsKey("key"));
+        assertFalse(store.containsKey("key"));
+        store.put(new CachedItem<>("key", value));
+        assertTrue(store.containsKey("key"));
+        store.put(new CachedItem<>("key", value));
+        assertTrue(store.containsKey("key"));
 
     }
 
     @Test
     public void testRemove() {
         Date value = new Date();
-        map.put(new CachedItem<>("key", value));
-        assertTrue(map.containsKey("key"));
-        map.remove("key");
-        assertFalse(map.containsKey("key"));
+        store.put(new CachedItem<>("key", value));
+        assertTrue(store.containsKey("key"));
+        store.remove("key");
+        assertFalse(store.containsKey("key"));
     }
 
     @Test
     public void testIsEmpty() {
-        assertTrue(map.isEmpty());
-        map.put(new CachedItem<>("key", new Date()));
-        assertFalse(map.isEmpty());
-        map.remove("key");
-        assertTrue(map.isEmpty());
+        assertTrue(store.isEmpty());
+        store.put(new CachedItem<>("key", new Date()));
+        assertFalse(store.isEmpty());
+        store.remove("key");
+        assertTrue(store.isEmpty());
     }
 
     @Test
     public void testSize() {
-        assertEquals(0, map.size());
-        map.put(new CachedItem<>("test", new Date()));
-        map.put(new CachedItem<>("test1", new Date()));
-        assertEquals(2, map.size());
-        map.put(new CachedItem<>("test1", new Date()));
-        assertEquals(2, map.size());
-        map.remove("test4");
-        assertEquals(2, map.size());
-        map.remove("test1");
-        assertEquals(1, map.size());
+        assertEquals(0, store.size());
+        store.put(new CachedItem<>("test", new Date()));
+        store.put(new CachedItem<>("test1", new Date()));
+        assertEquals(2, store.size());
+        store.put(new CachedItem<>("test1", new Date()));
+        assertEquals(2, store.size());
+        store.remove("test4");
+        assertEquals(2, store.size());
+        store.remove("test1");
+        assertEquals(1, store.size());
 
     }
 
     @Test
     public void testClear() throws IOException {
         Date value = new Date();
-        map.put(new CachedItem<>("key", value));
-        assertTrue(map.containsKey("key"));
-        map.clear();
-        assertFalse(map.containsKey("key"));
-        assertTrue(map.isEmpty());
+        store.put(new CachedItem<>("key", value));
+        assertTrue(store.containsKey("key"));
+        store.clear();
+        assertFalse(store.containsKey("key"));
+        assertTrue(store.isEmpty());
     }
 
     @Test
     public void testFull() throws Exception {
         for (int i = 0; i < MAX_ITEMS; i++) {
-            map.put(new CachedItem<>("key"+i, new Date()));
+            store.put(new CachedItem<>("key" + i, new Date()));
         }
-        assertTrue(map.isFull());
+        assertTrue(store.isFull());
     }
 }

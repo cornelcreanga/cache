@@ -5,6 +5,8 @@ import com.ccreanga.cache.store.HeapMemoryStore;
 import com.ccreanga.cache.store.Store;
 import com.ccreanga.cache.strategy.Strategy;
 import com.ccreanga.cache.strategy.StrategyFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.PriorityQueue;
@@ -16,13 +18,15 @@ public class MultiCache<K, V> implements Cache<K, V> {
     private Store<K, V> memoryStore;
     private Store<K, V> diskStore;
 
+    static final Logger logger = LoggerFactory.getLogger(MultiCache.class);
+
     public MultiCache(int maxItemsMemory, int maxItemsDisk, String folder, Strategy strategy) {
         memoryStore = new HeapMemoryStore<>(maxItemsMemory);
         diskStore = new DiskStore<>(new File(folder), maxItemsDisk);
         queue = new PriorityQueue<>(128, StrategyFactory.getComparator(strategy));
     }
 
-    public void put(K key, V value) {
+    public synchronized void put(K key, V value) {
         if (memoryStore.containsKey(key)) {
             CachedItem<K, V> item = memoryStore.remove(key);
             queue.remove(item);
@@ -53,7 +57,7 @@ public class MultiCache<K, V> implements Cache<K, V> {
 
     }
 
-    public V get(K key) {
+    public synchronized V get(K key) {
         if (memoryStore.containsKey(key)) {
             CachedItem<K, V> item = memoryStore.get(key);
             item.increaseHitCount();
@@ -71,11 +75,11 @@ public class MultiCache<K, V> implements Cache<K, V> {
         } else return null;
     }
 
-    public boolean containsKey(K key) {
+    public synchronized boolean containsKey(K key) {
         return memoryStore.containsKey(key) || diskStore.containsKey(key);
     }
 
-    public V remove(K key) {
+    public synchronized V remove(K key) {
         if (memoryStore.containsKey(key)) {
             CachedItem<K, V> item = memoryStore.remove(key);
             queue.remove(item);
@@ -87,15 +91,15 @@ public class MultiCache<K, V> implements Cache<K, V> {
         return null;
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return memoryStore.isEmpty() && diskStore.isEmpty();
     }
 
-    public int size() {
+    public synchronized int size() {
         return memoryStore.size() + diskStore.size();
     }
 
-    public void clear() {
+    public synchronized void clear() {
         memoryStore.clear();
         diskStore.clear();
     }

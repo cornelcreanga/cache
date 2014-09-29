@@ -43,13 +43,8 @@ public class DiskStore<K, V> implements Store<K, V> {
             throw new CacheCreationException(e);
         }
 
-        if (!keysFolder.mkdir())
-            throw new CacheCreationException("cannot create keysFolder folder");
-
-
-        if (!valuesFolder.mkdir())
-            throw new CacheCreationException("cannot create valuesFolder folder");
-
+        mkdirs(keysFolder);
+        mkdirs(valuesFolder);
 
     }
 
@@ -106,16 +101,16 @@ public class DiskStore<K, V> implements Store<K, V> {
             File keyFile = new File(keysFolder, fileName);
             File valueFile = new File(valuesFolder, fileName);
             CachedItem<K, V> oldValue = readValueObject(valueFile);
-            keyFile.delete();
-            valueFile.delete();
+            delete(keyFile);
+            delete(valueFile);
             while (!keyFile.getParentFile().equals(keysFolder)
                     && keyFile.getParentFile().listFiles().length == 0) {
-                keyFile.getParentFile().delete();
+                delete(keyFile.getParentFile());
                 keyFile = keyFile.getParentFile();
             }
             while (!valueFile.getParentFile().equals(valuesFolder)
                     && valueFile.getParentFile().listFiles().length == 0) {
-                valueFile.getParentFile().delete();
+                delete(valueFile.getParentFile());
                 valueFile = valueFile.getParentFile();
             }
             currentItems--;
@@ -206,8 +201,22 @@ public class DiskStore<K, V> implements Store<K, V> {
                 serializer.serialize(value, out);
             }
         } catch (IOException e) {
-            throw new CacheReadException(e);
+            throw new CacheWriteException(e);
         }
+    }
+
+    private void delete(File file){
+        try{
+            Files.delete(file.toPath());
+        }catch(IOException e){
+            throw new CacheWriteException(e);
+        }
+    }
+
+
+    private void mkdirs(File file){
+        if (!file.mkdirs())
+            throw new CacheWriteException("cannot create folders:"+file.toPath());
     }
 
 }
