@@ -8,9 +8,11 @@ import com.ccreanga.cache.strategy.StrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.util.PriorityQueue;
 
+@ThreadSafe
 public class MultiCache<K, V> implements Cache<K, V> {
 
     private PriorityQueue<CachedItem<K, V>> queue;

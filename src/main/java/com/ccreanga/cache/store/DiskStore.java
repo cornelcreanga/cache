@@ -11,9 +11,14 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
 import java.nio.file.Files;
 
+/**
+ * Warning - if the root folder already exists it will be deleted
+ */
+@NotThreadSafe
 public class DiskStore<K, V> implements Store<K, V> {
 
     private File root;

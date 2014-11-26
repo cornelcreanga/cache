@@ -3,8 +3,9 @@ package com.ccreanga.cache.store;
 import com.ccreanga.cache.CachedItem;
 import com.google.common.base.Preconditions;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
-
+@NotThreadSafe
 public class HeapMemoryStore<K, V> implements Store<K, V> {
 
     private int maxItems;
